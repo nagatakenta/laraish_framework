@@ -36,29 +36,5 @@
     },
     "scripts": {
         "fix-cs": ["prettier **/*.php --write"]
-    },
-    // "repositories": {
-	// 	"seven-ario/laraish_contracts": {
-	// 		"type": "vcs",
-	// 		"url": "https://github.com/seven-ario/laraish_contracts.git"
-	// 	},
-    //     "seven-ario/laraish_support": {
-	// 		"type": "vcs",
-	// 		"url": "https://github.com/seven-ario/laraish_support.git"
-	// 	},
-    //     "seven-ario/laraish_pagination": {
-	// 		"type": "vcs",
-	// 		"url": "https://github.com/seven-ario/laraish_pagination.git"
-	// 	},
-    //     "seven-ario/laraish_options": {
-	// 		"type": "vcs",
-	// 		"url": "https://github.com/seven-ario/laraish_options.git"
-	// 	}
-	// },
-    // "require": {
-    //     "seven-ario/laraish_contracts": "^1.0",
-    //     "seven-ario/laraish_support": "^1.0",
-    //     "seven-ario/laraish_pagination": "^1.0",
-    //     "seven-ario/laraish_options": "^1.0"
-    // }
+    }
 }
