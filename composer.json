@@ -21,10 +21,10 @@
     "require": {
         "php": "^8.1.9",
         "laravel/framework": "^9.0",
-        "seven-ario/laraish_contracts": "^1.0",
-        "seven-ario/laraish_support": "^1.0",
-        "seven-ario/laraish_pagination": "^1.0",
-        "seven-ario/laraish_options": "^1.0"
+        "seven-ario/laraish_contracts": "dev-master",
+        "seven-ario/laraish_support": "dev-master",
+        "seven-ario/laraish_pagination": "dev-master",
+        "seven-ario/laraish_options": "dev-master"
     },
     "autoload": {
         "files": [
