@@ -1,13 +1,8 @@
 <?php
 
-namespace Laraish\Support\Wp\Model;
+namespace Laraish\WpSupport\Model;
 
-use JsonSerializable;
-use Illuminate\Support\Collection;
-use Illuminate\Contracts\Support\Jsonable;
-use Illuminate\Contracts\Support\Arrayable;
-
-abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
+abstract class BaseModel
 {
     /**
      * The model's attributes(cached value).
@@ -23,19 +18,13 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
     protected $acfFields;
 
     /**
-     * The attributes that should be visible in serialization.
-     *
-     * @var array
-     */
-    protected $visible = [];
-
-    /**
      * Get an attribute from the model.
      *
-     * @param string $key
+     * @param  string $key
+     *
      * @return mixed
      */
-    public function getAttribute(string $key)
+    public function getAttribute($key)
     {
         if (array_key_exists($key, $this->attributes)) {
             return $this->getAttributeFromCache($key);
@@ -81,6 +70,7 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
      * e.g. `permalink_text` --> `permalink`
      *
      * @param string $key
+     *
      * @return string
      */
     protected function getOriginalKey(string $key): ?string
@@ -94,9 +84,10 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
      * Get an attribute from the $attributes array.
      *
      * @param  string $key
+     *
      * @return mixed
      */
-    protected function getAttributeFromCache(string $key)
+    protected function getAttributeFromCache($key)
     {
         if (array_key_exists($key, $this->attributes)) {
             return $this->attributes[$key];
@@ -109,6 +100,7 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
      * Get an attribute from the $attributes array.
      *
      * @param  string $key
+     *
      * @return mixed
      */
     protected function getAttributeFromMethod(string $key)
@@ -124,16 +116,17 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
      * Get the attribute from ACF fields.
      *
      * @param string $key
+     *
      * @return mixed|null|string
      */
     protected function getAttributeFromAcfFields(string $key)
     {
-        if (array_key_exists($key, (array) $this->acfFields)) {
+        if (array_key_exists($key, (array)$this->acfFields)) {
             return $this->acfFields[$key];
         }
 
         if ($originalKey = $this->getOriginalKey($key)) {
-            if (array_key_exists($originalKey, (array) $this->acfFields)) {
+            if (array_key_exists($originalKey, (array)$this->acfFields)) {
                 return strip_tags($this->acfFields[$originalKey]);
             }
         }
@@ -152,25 +145,14 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Set all of the current attributes on the model.
-     *
-     * @param array $attributes
-     * @return static
-     */
-    public function setAttributes(array $attributes): self
-    {
-        $this->attributes = $attributes;
-        return $this;
-    }
-
-    /**
      * Store arbitrary data to the $attribute array.
      *
-     * @param string $key
-     * @param mixed $value
+     * @param $key
+     * @param $value
+     *
      * @return mixed
      */
-    public function setAttribute(string $key, $value)
+    protected function setAttribute($key, $value)
     {
         $namespaceMethod = explode('::', $key);
         $key = $namespaceMethod[1] ?? $key;
@@ -181,49 +163,15 @@ abstract class BaseModel implements Arrayable, Jsonable, JsonSerializable
     }
 
     /**
-     * Convert model to array.
-     * @return array
-     */
-    public function toArray(): array
-    {
-        $attributes = (new Collection($this->visible))->mapWithKeys(function ($attribute) {
-            return [$attribute => $this->{$attribute}];
-        });
-
-        return $attributes->all();
-    }
-
-    /**
-     * Convert the model instance to JSON.
-     *
-     * @param int $options
-     * @return string
-     */
-    public function toJson($options = 0): string
-    {
-        $json = json_encode($this->jsonSerialize(), $options);
-
-        return $json;
-    }
-
-    /**
-     * Convert the object into something JSON serializable.
-     *
-     * @return array
-     */
-    public function jsonSerialize(): array
-    {
-        return $this->toArray();
-    }
-
-    /**
      * Dynamically retrieve attributes on the model.
      *
      * @param  string $key
+     *
      * @return mixed
      */
-    public function __get(string $key)
+    public function __get($key)
     {
         return $this->getAttribute($key);
     }
+
 }

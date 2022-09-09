@@ -1,6 +1,6 @@
 <?php
 
-namespace Laraish\Support\Wp\Query;
+namespace Laraish\WpSupport\Query;
 
 use WP_Query;
 use Laraish\Pagination\Paginator;
@@ -38,9 +38,9 @@ class QueryResults extends Collection
     public function getPagination(array $options = []): PaginatorContract
     {
         $wp_query = $this->wp_query;
-        $total = (int) $wp_query->found_posts;
-        $perPage = (int) $wp_query->query_vars['posts_per_page'];
-        $currentPage = (int) $wp_query->query_vars['paged'];
+        $total = (int)$wp_query->found_posts;
+        $perPage = (int)$wp_query->query_vars['posts_per_page'];
+        $currentPage = (int)$wp_query->query_vars['paged'];
 
         return new Paginator($total, $perPage, $currentPage, $options);
     }

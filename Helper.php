@@ -12,7 +12,7 @@ class Helper
      * @param bool $snakeCaseKey
      * @return array|\stdClass
      */
-    public static function arrayToObject(array $array, bool $snakeCaseKey = true)
+    public static function arrayToObject(array $array, bool $snakeCaseKey = false)
     {
         if (!Arr::isAssoc($array)) {
             foreach ($array as &$value) {
@@ -27,7 +27,7 @@ class Helper
         $obj = new \stdClass;
         foreach ($array as $key => $value) {
             if ($snakeCaseKey) {
-                $key = str_replace('-', '_', Str::snake($key));
+                $key = Str::snake($key);
             }
             if (is_array($value)) {
                 $obj->{$key} = static::arrayToObject($value);

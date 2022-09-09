@@ -1,6 +1,6 @@
 <?php
 
-namespace Laraish\Support\Wp\Model;
+namespace Laraish\WpSupport\Model;
 
 use WP_Term;
 use WP_Term_Query;
@@ -21,31 +21,15 @@ class Taxonomy extends BaseModel
     protected $termClass;
 
     /**
-     * The default term class to be used to create new instances.
-     * @type string
-     */
-    protected static $defaultTermClass = Term::class;
-
-    /**
-     * Set the default term class to be used to create new instances.
-     *
-     * @param string $termClass
-     */
-    public static function setDefaultTermClass(string $termClass)
-    {
-        static::$defaultTermClass = $termClass;
-    }
-
-    /**
      * Taxonomy constructor.
      *
      * @param string $name
-     * @param string|null $termClass
+     * @param string $termClass
      */
-    public function __construct(string $name, string $termClass = null)
+    public function __construct(string $name, string $termClass = Term::class)
     {
         $this->name = $name;
-        $this->termClass = $termClass ?? static::$defaultTermClass;
+        $this->termClass = $termClass;
     }
 
     /**
@@ -110,7 +94,7 @@ class Taxonomy extends BaseModel
     public function getTermBy($field, $value): ?Term
     {
         $term = get_term_by($field, $value, $this->name);
-        if (!$term) {
+        if ( ! $term) {
             return null;
         }
 
@@ -138,8 +122,8 @@ class Taxonomy extends BaseModel
         foreach ($descendantTermSlugs as $childrenCategorySlug) {
             $query = new WP_Term_Query([
                 'taxonomy' => $taxonomyName,
-                'slug' => $childrenCategorySlug,
-                'parent' => $parentTerm->term_id,
+                'slug'     => $childrenCategorySlug,
+                'parent'   => $parentTerm->term_id
             ]);
 
             $queriedTerms = $query->get_terms();
@@ -165,30 +149,6 @@ class Taxonomy extends BaseModel
     }
 
     /**
-     * Add a new term to the database.
-     *
-     * @param string $term
-     * @param array $args
-     * @return array|int[]|\WP_Error
-     */
-    public function insertTerm(string $term, $args = [])
-    {
-        return wp_insert_term($term, $this->name, $args);
-    }
-
-    /**
-     * Removes a term from the database.
-     *
-     * @param int $term
-     * @param array $args
-     * @return array|bool|int|object|\WP_Error|WP_Term|null
-     */
-    public function deleteTerm(int $term, $args = [])
-    {
-        return wp_delete_term($term, $this->name, $args);
-    }
-
-    /**
      * Get slug hierarchy by a term.
      *
      * @param Term $term
@@ -197,12 +157,10 @@ class Taxonomy extends BaseModel
      */
     public static function getSlugHierarchyByTerm(Term $term): array
     {
-        $categoryHierarchy = $term
-            ->ancestors()
-            ->map(function (Term $term) {
-                return $term->slug();
-            })
-            ->push($term->slug());
+        $categoryHierarchy = $term->ancestors()->map(function (Term $term) {
+            return $term->slug();
+        })->push($term->slug());
+
 
         return implode('/', $categoryHierarchy->toArray());
     }

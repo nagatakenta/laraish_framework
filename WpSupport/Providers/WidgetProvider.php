@@ -1,6 +1,6 @@
 <?php
 
-namespace Laraish\Support\Wp\Providers;
+namespace Laraish\WpSupport\Providers;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -57,5 +57,6 @@ class WidgetProvider extends ServiceProvider
 
     public function register()
     {
+
     }
 }

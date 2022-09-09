@@ -1,12 +1,12 @@
 <?php
 
-namespace Laraish\Support\Wp\Model;
+namespace Laraish\WpSupport\Model;
 
 use WP_Post;
 use WP_Query;
 use DateTime;
 use Illuminate\Support\Collection;
-use Laraish\Support\Wp\Query\QueryResults;
+use Laraish\WpSupport\Query\QueryResults;
 
 class Post extends BaseModel
 {
@@ -106,14 +106,14 @@ class Post extends BaseModel
         $thumbnailObject = null;
         $thumbnail = wp_get_attachment_image_src(get_post_thumbnail_id($this->wpPost), $size);
         if ($thumbnail) {
-            $thumbnailObject = (object) [
+            $thumbnailObject = (object)[
                 'url' => $thumbnail[0],
                 'width' => $thumbnail[1],
-                'height' => $thumbnail[2],
+                'height' => $thumbnail[2]
             ];
-        } elseif ($imgPlaceHolder) {
-            $thumbnailObject = (object) [
-                'url' => $imgPlaceHolder,
+        } else if ($imgPlaceHolder) {
+            $thumbnailObject = (object)[
+                'url' => $imgPlaceHolder
             ];
         }
 
@@ -151,11 +151,11 @@ class Post extends BaseModel
      *
      * @return string
      */
-    public function content($moreLinkText = null, $stripTeaser = false): string
+    public function content(): string
     {
-        $content = get_the_content($moreLinkText, $stripTeaser, $this->wpPost);
-        $content = apply_filters('the_content', $content);
-        $content = str_replace(']]>', ']]&gt;', $content);
+        ob_start();
+        the_content();
+        $content = ob_get_clean();
 
         return $this->setAttribute(__METHOD__, $content);
     }
@@ -182,9 +182,9 @@ class Post extends BaseModel
      *
      * @return mixed
      */
-    public function date($format = null)
+    public function date($format = '')
     {
-        $date = get_post_time($format ?? get_option('date_format'), false, $this->wpPost, true);
+        $date = get_post_time($format ?: get_option('date_format'), false, $this->wpPost, true);
 
         return $this->setAttribute(__METHOD__, $date);
     }
@@ -196,52 +196,9 @@ class Post extends BaseModel
      *
      * @return mixed
      */
-    public function time($format = null)
+    public function time($format = '')
     {
-        $time = get_post_time($format ?? get_option('time_format'), false, $this->wpPost, true);
-
-        return $this->setAttribute(__METHOD__, $time);
-    }
-
-    /**
-     * The modified date and time of this post.
-     * This is supposed to be used for the `datetime` attribute of `time` element.
-     *
-     * @param string $format
-     *
-     * @return false|int|string
-     */
-    public function modifiedDateTime($format = DateTime::RFC3339)
-    {
-        $dateTime = get_post_modified_time($format, false, $this->wpPost);
-
-        return $this->setAttribute(__METHOD__, $dateTime);
-    }
-
-    /**
-     * Get the formatted modified post date.
-     *
-     * @param string $format
-     *
-     * @return mixed
-     */
-    public function modifiedDate($format = null)
-    {
-        $date = get_post_modified_time($format ?: get_option('date_format'), false, $this->wpPost, true);
-
-        return $this->setAttribute(__METHOD__, $date);
-    }
-
-    /**
-     * Get the formatted modified post time.
-     *
-     * @param string $format
-     *
-     * @return mixed
-     */
-    public function modifiedTime($format = null)
-    {
-        $time = get_post_modified_time($format ?: get_option('time_format'), false, $this->wpPost, true);
+        $time = get_post_time($format ?: get_option('time_format'), false, $this->wpPost, true);
 
         return $this->setAttribute(__METHOD__, $time);
     }
@@ -364,6 +321,7 @@ class Post extends BaseModel
         return $this->setAttribute(__METHOD__, $isPasswordRequired);
     }
 
+
     /**
      * Updates the post meta field.
      *
@@ -388,7 +346,7 @@ class Post extends BaseModel
      */
     public function getMeta(string $key = '', bool $single = false)
     {
-        return get_post_meta($this->id, $key, $single);
+        return get_post_meta($key, $single);
     }
 
     /**
@@ -505,7 +463,7 @@ class Post extends BaseModel
         if ($wp_query) {
             $posts = array_map(function ($post) {
                 return new static($post);
-            }, (array) $wp_query->posts);
+            }, (array)$wp_query->posts);
         }
 
         return QueryResults::create($posts, $wp_query);
